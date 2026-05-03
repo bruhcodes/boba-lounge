@@ -91,6 +91,14 @@ export type ListUsersParams = {
    * Search by name, phone, or id
    */
   search?: string;
+  /**
+   * Number of users to return
+   */
+  limit?: number;
+  /**
+   * Number of users to skip
+   */
+  offset?: number;
 };
 
 export type ListNotificationsParams = {

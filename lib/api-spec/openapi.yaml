@@ -44,6 +44,16 @@ paths:
           schema:
             type: string
           description: Search by name, phone, or id
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of users to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          description: Number of users to skip
       responses:
         "200":
           description: List of users

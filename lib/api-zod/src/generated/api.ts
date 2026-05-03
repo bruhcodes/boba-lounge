@@ -23,6 +23,8 @@ export const ListUsersQueryParams = zod.object({
     .string()
     .optional()
     .describe("Search by name, phone, or id"),
+  limit: zod.coerce.number().optional().describe("Number of users to return"),
+  offset: zod.coerce.number().optional().describe("Number of users to skip"),
 });
 
 export const ListUsersResponseItem = zod.object({
