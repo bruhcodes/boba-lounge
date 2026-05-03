@@ -11,7 +11,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { QRCodeSVG } from "qrcode.react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, BellOff, Crown, Gift } from "lucide-react";
+import { Bell, BellOff, Crown, Gift, MapPin, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import {
   hasActivePushSubscription,
@@ -45,6 +45,7 @@ export default function PunchCard() {
   const [subscribing, setSubscribing] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [sendingTestPush, setSendingTestPush] = useState(false);
+  const [showMapOptions, setShowMapOptions] = useState(false);
 
   useEffect(() => {
     if (!userId && location !== "/onboarding" && location !== "/") {
@@ -160,17 +161,17 @@ export default function PunchCard() {
       <div
         style={{
           minHeight: "100dvh",
-          background: "linear-gradient(180deg, #0f172a 0%, #1e293b 100%)",
+          background: "linear-gradient(180deg, #f8fafc 0%, #f3e8ff 100%)",
           display: "flex",
           flexDirection: "column",
           padding: "24px 20px",
           gap: 16,
         }}
       >
-        <Skeleton className="h-16 w-full rounded-2xl" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <Skeleton className="h-48 w-full rounded-3xl" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <Skeleton className="h-40 w-full rounded-3xl" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <Skeleton className="h-52 w-full rounded-3xl" style={{ background: "rgba(255,255,255,0.06)" }} />
+        <Skeleton className="h-16 w-full rounded-2xl" style={{ background: "rgba(139, 92, 246, 0.1)" }} />
+        <Skeleton className="h-48 w-full rounded-3xl" style={{ background: "rgba(139, 92, 246, 0.1)" }} />
+        <Skeleton className="h-40 w-full rounded-3xl" style={{ background: "rgba(139, 92, 246, 0.1)" }} />
+        <Skeleton className="h-52 w-full rounded-3xl" style={{ background: "rgba(139, 92, 246, 0.1)" }} />
       </div>
     );
   }
@@ -202,20 +203,20 @@ export default function PunchCard() {
       case "icecream": return "🍦";
       case "bean": return "🫘";
       case "sparkle": return "✨";
-      case "logo": return <img src="/logo.png" style={{ width: "70%", height: "70%", objectFit: "contain" }} alt="logo" />;
+      case "logo": return <img src="/logo.png" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", transform: "scale(1.05)" }} alt="logo" />;
       case "star": default: return "⭐";
     }
   };
 
-  const accentColor = settings.accentColor || "#06b6d4";
+  const accentColor = settings.accentColor || "#8b5cf6";
   const supportsNotifications = supportsWebPush();
   const needsInstallForIosPush = isIosDevice() && !isStandalone;
 
   // Background gradient from settings
-  const pageBg = "#f8fafc";
+  const pageBg = "radial-gradient(circle at top, rgba(139, 92, 246, 0.12), transparent 28%), linear-gradient(180deg, #f8fafc 0%, #f3e8ff 38%, #faf5ff 100%)";
 
   // Card gradient
-  const cardBg = "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)";
+  const cardBg = "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)";
 
   return (
     <div
@@ -258,7 +259,7 @@ export default function PunchCard() {
               fontFamily: "var(--app-font-serif, serif)",
             }}
           >
-            {settings.shopName || "Cool Spot"}
+            {settings.shopName || "The BOBA Lounge"}
           </h1>
         </div>
 
@@ -446,6 +447,7 @@ export default function PunchCard() {
                           animate={{ scale: 1, rotate: 0 }}
                           exit={{ scale: 0 }}
                           transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                          style={{ display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center" }}
                         >
                           {getStampIcon()}
                         </motion.span>
@@ -611,7 +613,96 @@ export default function PunchCard() {
           </div>
         </motion.div>
 
+        {/* Map Links Box */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          style={{
+            borderRadius: 20,
+            overflow: "hidden",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 12px 32px -12px rgba(0,0,0,0.05)",
+            marginBottom: 16,
+          }}
+        >
+          <button
+            onClick={() => setShowMapOptions(!showMapOptions)}
+            style={{
+              width: "100%",
+              padding: "16px 20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 12, background: `${accentColor}15`, display: "flex", alignItems: "center", justifyContent: "center", color: accentColor }}>
+                <MapPin style={{ width: 18, height: 18 }} />
+              </div>
+              <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#0f172a" }}>
+                Take me to the store
+              </p>
+            </div>
+            <Navigation style={{ width: 16, height: 16, color: "#64748b", transform: showMapOptions ? "rotate(180deg)" : "rotate(90deg)", transition: "transform 0.2s" }} />
+          </button>
 
+          <AnimatePresence>
+            {showMapOptions && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                style={{ overflow: "hidden" }}
+              >
+                <div style={{ padding: "0 20px 20px", display: "flex", gap: 10 }}>
+                  <a
+                    href={`http://maps.apple.com/?q=${encodeURIComponent(settings.shopName || "The BOBA Lounge")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      padding: "12px",
+                      borderRadius: 14,
+                      background: "#f8fafc",
+                      border: "1px solid #e2e8f0",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      color: "#0f172a",
+                      fontSize: 13,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Apple Maps
+                  </a>
+                  <a
+                    href="https://maps.app.goo.gl/gGGaiVKz7b3Z7b1W9"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flex: 1,
+                      padding: "12px",
+                      borderRadius: 14,
+                      background: "#f8fafc",
+                      border: "1px solid #e2e8f0",
+                      textAlign: "center",
+                      textDecoration: "none",
+                      color: "#0f172a",
+                      fontSize: 13,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Google Maps
+                  </a>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Sign out */}
         <motion.div

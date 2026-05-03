@@ -31,7 +31,7 @@ export async function sendWebPush(userIds: string[], message: string) {
     const subscriptions = await listPushSubscriptionsByUserIds(userIds);
 
     const payload = JSON.stringify({
-      title: settings.shopName || "Punch Card",
+      title: settings.shopName || "The BOBA Lounge",
       body: message,
       url: "/notifications",
       tag: `msg-${Date.now()}`,

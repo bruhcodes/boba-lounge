@@ -116,7 +116,8 @@ router.patch("/users/:id", async (req, res): Promise<void> => {
   const body = parseUpdateUserBody(req.body);
   if (body?.totalPunches !== undefined) {
     const adminPassword = req.headers["x-admin-password"];
-    if (adminPassword !== "12345") {
+    const expectedPassword = process.env.ADMIN_PASSWORD || "12345";
+    if (adminPassword !== expectedPassword) {
       res.status(401).json({ error: "Unauthorized: Invalid admin password" });
       return;
     }
@@ -172,7 +173,8 @@ router.delete("/users/:id", async (req, res): Promise<void> => {
 
 router.post("/users/:id/punch", async (req, res): Promise<void> => {
   const adminPassword = req.headers["x-admin-password"];
-  if (adminPassword !== "12345") {
+  const expectedPassword = process.env.ADMIN_PASSWORD || "12345";
+  if (adminPassword !== expectedPassword) {
     res.status(401).json({ error: "Unauthorized: Invalid admin password" });
     return;
   }
@@ -201,6 +203,19 @@ router.post("/users/:id/punch", async (req, res): Promise<void> => {
     const msg = `You earned a punch! 🌟 (${user.punchCount}/${user.totalPunches})`;
     await createNotifications([user.id], msg);
     sendWebPush([user.id], msg).catch(() => {});
+
+    // Optional automated "Thank You" after 5 minutes
+    if (req.query.thankYou === "true") {
+      setTimeout(async () => {
+        try {
+          const thankYouMsg = `Thanks for stopping by, ${user.name}! Enjoy your drink! 🧋`;
+          await createNotifications([user.id], thankYouMsg);
+          sendWebPush([user.id], thankYouMsg).catch(() => {});
+        } catch (err) {
+          // background error
+        }
+      }, 5 * 60 * 1000);
+    }
   } catch (err) {
     // ignore notification error
   }
@@ -210,7 +225,8 @@ router.post("/users/:id/punch", async (req, res): Promise<void> => {
 
 router.post("/users/:id/remove-punch", async (req, res): Promise<void> => {
   const adminPassword = req.headers["x-admin-password"];
-  if (adminPassword !== "12345") {
+  const expectedPassword = process.env.ADMIN_PASSWORD || "12345";
+  if (adminPassword !== expectedPassword) {
     res.status(401).json({ error: "Unauthorized: Invalid admin password" });
     return;
   }
@@ -235,7 +251,8 @@ router.post("/users/:id/remove-punch", async (req, res): Promise<void> => {
 
 router.post("/users/:id/reset", async (req, res): Promise<void> => {
   const adminPassword = req.headers["x-admin-password"];
-  if (adminPassword !== "12345") {
+  const expectedPassword = process.env.ADMIN_PASSWORD || "12345";
+  if (adminPassword !== expectedPassword) {
     res.status(401).json({ error: "Unauthorized: Invalid admin password" });
     return;
   }

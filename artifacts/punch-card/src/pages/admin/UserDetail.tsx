@@ -1,6 +1,6 @@
 import { useRoute } from "wouter";
-import { useGetUser, getGetUserQueryKey, useAddPunch, useRemovePunch, useResetPunches, useGetSettings, getGetSettingsQueryKey, getGetStatsQueryKey, getListUsersQueryKey, useListNotifications, useUpdateUser } from "@workspace/api-client-react";
-import { AdminLayout } from "@/components/layout/Layouts";
+import { useGetUser, getGetUserQueryKey, useAddPunch, useRemovePunch, useResetPunches, useGetSettings, getGetSettingsQueryKey, getGetStatsQueryKey, getListUsersQueryKey, useListNotifications, useUpdateUser, addPunch as addPunchApi } from "@workspace/api-client-react";
+import { AdminLayout, useGlobalAutoThank } from "@/components/layout/Layouts";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -42,20 +42,25 @@ export default function AdminUserDetail() {
   const resetPunches = useResetPunches();
   const updateUser = useUpdateUser();
 
+  const [sendThankYou, setSendThankYou] = useGlobalAutoThank();
+
   const refreshUserData = (data: unknown) => {
     queryClient.setQueryData(getGetUserQueryKey(userId), data);
     queryClient.invalidateQueries({ queryKey: getListUsersQueryKey() });
     queryClient.invalidateQueries({ queryKey: getGetStatsQueryKey() });
   };
 
-  const handleAddPunch = () => {
-    addPunch.mutate({ id: userId }, {
-      onSuccess: (data) => {
-        refreshUserData(data);
-        toast.success("Punch added successfully");
-      },
-      onError: () => toast.error("Failed to add punch")
-    });
+  const handleAddPunch = async () => {
+    try {
+      const data = await addPunchApi(userId, {
+        params: { thankYou: sendThankYou ? "true" : "false" }
+      } as any);
+      refreshUserData(data);
+      toast.success(sendThankYou ? "Punch added! Thank you scheduled for 5 mins." : "Punch added successfully");
+    } catch (err) {
+      console.error("Failed to add punch:", err);
+      toast.error("Failed to add punch");
+    }
   };
 
   const handleRemovePunch = () => {
@@ -150,6 +155,19 @@ export default function AdminUserDetail() {
                   >
                     <Plus className="w-6 h-6 mr-2" /> Add Punch
                   </Button>
+                </div>
+
+                <div className="mt-6 flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="thankYouToggle"
+                    checked={sendThankYou}
+                    onChange={(e) => setSendThankYou(e.target.checked)}
+                    className="h-5 w-5 rounded border-white/20 bg-white/10 text-cyan-500 focus:ring-cyan-500"
+                  />
+                  <label htmlFor="thankYouToggle" className="text-sm font-medium text-slate-300 cursor-pointer select-none">
+                    Send automated "Thank You" notification in 5 mins 💌
+                  </label>
                 </div>
               </div>
             </CardContent>

@@ -253,14 +253,14 @@ export default function AdminSettings() {
                 <div
                   className="overflow-hidden rounded-[2rem] border border-slate-200 p-5 text-white shadow-lg"
                   style={{
-                    background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
                   }}
                 >
                   <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-white/90">
                     <WandSparkles className="h-3.5 w-3.5" />
                     Member status
                   </div>
-                  <h2 className="mt-4 text-3xl font-semibold" data-display="serif">{shopName || "Cool Spot"}</h2>
+                  <h2 className="mt-4 text-3xl font-semibold" data-display="serif">{shopName || "The BOBA Lounge"}</h2>
                   <div className="mt-6 grid grid-cols-5 gap-2">
                     {Array.from({ length: 10 }).map((_, index) => (
                       <div key={index} className="aspect-square rounded-full border border-white/20 bg-white/12" />

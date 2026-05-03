@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 
-const ADMIN_PASSWORD = "12345";
+
 const ADMIN_SESSION_KEY = "admin-unlocked";
 
 export function AdminLockGate({ children }: { children: React.ReactNode }) {
@@ -10,32 +10,54 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
-    setUnlocked(sessionStorage.getItem(ADMIN_SESSION_KEY) === "true");
+    const isUnlocked = sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+    const hasPassword = !!sessionStorage.getItem("admin-password");
+    if (isUnlocked && hasPassword) {
+      setUnlocked(true);
+    } else {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      setUnlocked(false);
+    }
   }, []);
 
   if (unlocked) {
     return <>{children}</>;
   }
 
-  const handleUnlock = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleUnlock = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (password !== ADMIN_PASSWORD) {
-      setError("Incorrect password. Please try again.");
-      return;
-    }
-
-    sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
-    sessionStorage.setItem("admin-password", password);
-    setUnlocked(true);
     setError("");
+
+    try {
+      const response = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      if (!response.ok) {
+        setError("Incorrect password. Please try again.");
+        return;
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+        sessionStorage.setItem("admin-password", password);
+        setUnlocked(true);
+      } else {
+        setError("Incorrect password. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to verify password. Please try again.");
+    }
   };
 
   return (
     <div
       style={{
         minHeight: "100dvh",
-        background: "#f8fafc",
+        background: "radial-gradient(circle at top, rgba(139, 92, 246, 0.12), transparent 28%), linear-gradient(180deg, #f8fafc 0%, #f3e8ff 38%, #faf5ff 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -60,7 +82,7 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
               justifyContent: "center",
             }}
           >
-            <img src="/logo.png" alt="Cool Spot Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            <img src="/logo.png" alt="The BOBA Lounge Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <h1
             style={{
@@ -83,7 +105,7 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
               textTransform: "uppercase",
             }}
           >
-            Cool Spot Frozen Yogurt &amp; Coffee
+            The BOBA Lounge
           </p>
           <p style={{ fontSize: 13, color: "#64748b", margin: "10px 0 0", lineHeight: 1.5 }}>
             Staff use only. Enter your admin password to continue.
@@ -140,7 +162,7 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
                   letterSpacing: "0.1em",
                 }}
                 onFocus={(e) =>
-                  !error && (e.currentTarget.style.borderColor = "#38bdf8")
+                  !error && (e.currentTarget.style.borderColor = "#8b5cf6")
                 }
                 onBlur={(e) =>
                   !error && (e.currentTarget.style.borderColor = "#e2e8f0")
@@ -170,7 +192,7 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
                 padding: "15px",
                 borderRadius: 14,
                 border: "none",
-                background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
                 color: "white",
                 fontSize: 16,
                 fontWeight: 700,
@@ -196,7 +218,7 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
             marginTop: 24,
           }}
         >
-          Authorized personnel only · Cool Spot Staff Portal
+          Authorized personnel only · The BOBA Lounge Staff Portal
         </p>
       </div>
     </div>

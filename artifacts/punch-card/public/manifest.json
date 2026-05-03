@@ -1,11 +1,11 @@
 {
-  "name": "Punch Card",
-  "short_name": "Punch",
-  "description": "Digital punch card for your favorite coffee shop",
+  "name": "The BOBA Lounge",
+  "short_name": "BOBA Lounge",
+  "description": "The BOBA Lounge Rewards App",
   "display": "standalone",
   "start_url": ".",
   "background_color": "#ffffff",
-  "theme_color": "#0f172a",
+  "theme_color": "#8b5cf6",
   "orientation": "portrait",
   "scope": ".",
   "icons": [

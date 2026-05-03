@@ -3,6 +3,30 @@ import { Link, useLocation } from "wouter";
 import { Bell, Home, Settings, Sparkles, Users, ChevronLeft } from "lucide-react";
 import { useGetSettings, useListNotifications } from "@workspace/api-client-react";
 
+export function useGlobalAutoThank() {
+  const [enabled, setEnabled] = useState(() => {
+    const stored = localStorage.getItem("globalAutoThank");
+    return stored === null ? true : stored === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("globalAutoThank", enabled.toString());
+    // Dispatch a custom event to sync across components
+    window.dispatchEvent(new Event("globalAutoThankChanged"));
+  }, [enabled]);
+
+  useEffect(() => {
+    const handler = () => {
+      const stored = localStorage.getItem("globalAutoThank");
+      setEnabled(stored === null ? true : stored === "true");
+    };
+    window.addEventListener("globalAutoThankChanged", handler);
+    return () => window.removeEventListener("globalAutoThankChanged", handler);
+  }, []);
+
+  return [enabled, setEnabled] as const;
+}
+
 type PremiumSettings = {
   heroBadge?: string | null;
   shopName?: string | null;
@@ -32,7 +56,7 @@ export function MobileLayout({ children, title, showBack, backHref = "/card" }: 
   }, [notifications]);
 
   return (
-    <div className="flex min-h-[100dvh] w-full justify-center bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.12),transparent_28%),linear-gradient(180deg,#f8fafc_0%,#e0f2fe_38%,#eef2ff_100%)] px-2 py-3">
+    <div className="flex min-h-[100dvh] w-full justify-center bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.12),transparent_28%),linear-gradient(180deg,#f8fafc_0%,#f3e8ff_38%,#faf5ff_100%)] px-2 py-3">
       <div className="relative flex w-full max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-white/60 bg-white/55 shadow-[0_30px_80px_-28px_rgba(15,23,42,0.35)] backdrop-blur-2xl">
         <header className="sticky top-0 z-10 flex h-18 items-center justify-between border-b border-white/50 bg-white/70 px-6 py-4 backdrop-blur-xl">
           <div className="flex items-center gap-3">
@@ -64,9 +88,10 @@ export function MobileLayout({ children, title, showBack, backHref = "/card" }: 
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const [globalAutoThank, setGlobalAutoThank] = useGlobalAutoThank();
   const { data: rawSettings } = useGetSettings();
   const settings = rawSettings as (typeof rawSettings & PremiumSettings) | undefined;
-  const accentColor = settings?.accentColor || "#06b6d4";
+  const accentColor = settings?.accentColor || "#8b5cf6";
   const adminHeroStyle = settings?.backgroundImageUrl
     ? {
         backgroundImage: `linear-gradient(135deg, rgba(15,23,42,0.88), rgba(15,23,42,0.62)), url(${settings.backgroundImageUrl})`,
@@ -83,17 +108,17 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-[100dvh] bg-[radial-gradient(circle_at_top,_rgba(6,182,212,0.12),transparent_25%),linear-gradient(180deg,#f8fafc_0%,#e2e8f0_100%)] text-slate-900">
+    <div className="min-h-[100dvh] bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.15),transparent_25%),linear-gradient(180deg,#f8fafc_0%,#f3e8ff_100%)] text-slate-900">
       <div className="mx-auto flex min-h-[100dvh] max-w-[1400px]">
         <aside className="hidden w-80 shrink-0 border-r border-slate-200/80 bg-slate-950/98 px-6 py-8 text-white md:flex md:flex-col">
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20" style={adminHeroStyle}>
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white p-1 shadow-sm">
-                <img src="/logo.png" alt="Cool Spot Logo" className="h-full w-full object-contain" />
+                <img src="/logo.png" alt="The BOBA Lounge Logo" className="h-full w-full object-contain" />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.35em]" style={{ color: accentColor }}>Admin panel</p>
-                <h1 className="text-2xl font-semibold tracking-tight" data-display="serif">{settings?.shopName || "Digital Pun Master"}</h1>
+                <h1 className="text-2xl font-semibold tracking-tight" data-display="serif">{settings?.shopName || "The BOBA Lounge"}</h1>
               </div>
             </div>
             <p className="mt-5 text-sm leading-6 text-slate-300">
@@ -107,6 +132,24 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             <p className="mt-2 leading-6">
               {settings?.welcomeMessage || "Shape the customer experience with richer card styling, stronger messages, and tighter campaign design."}
             </p>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-4">
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                   <div className={`h-2 w-2 rounded-full ${globalAutoThank ? 'bg-cyan-400' : 'bg-slate-500'} shadow-[0_0_8px_rgba(34,211,238,0.5)]`} />
+                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">Auto-Thank</span>
+                </div>
+                <button 
+                  onClick={() => setGlobalAutoThank(!globalAutoThank)}
+                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${globalAutoThank ? 'bg-cyan-500' : 'bg-slate-700'}`}
+                >
+                  <span className={`pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform ${globalAutoThank ? 'translate-x-4' : 'translate-x-1'}`} />
+                </button>
+             </div>
+             <p className="mt-2 text-[10px] text-slate-500 leading-relaxed">
+               When ON, all punches automatically schedule a 5-min thank you message.
+             </p>
           </div>
 
           <nav className="mt-8 space-y-2">
@@ -134,7 +177,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-y-auto px-4 py-4 md:px-8 md:py-8">
           <div className="mb-6 rounded-[2rem] border border-white/70 bg-white/70 px-5 py-4 shadow-lg shadow-slate-900/5 backdrop-blur md:hidden">
             <p className="text-xs uppercase tracking-[0.35em]" style={{ color: accentColor }}>Admin panel</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight" data-display="serif">{settings?.shopName || "Digital Pun Master"}</h1>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight" data-display="serif">{settings?.shopName || "The BOBA Lounge"}</h1>
           </div>
 
           <div className="mx-auto max-w-6xl pb-24 md:pb-8">{children}</div>

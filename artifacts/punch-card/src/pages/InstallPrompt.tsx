@@ -179,7 +179,7 @@ export default function InstallPrompt() {
               width: 88,
               height: 88,
               borderRadius: 28,
-              background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -200,10 +200,10 @@ export default function InstallPrompt() {
             style={{ textAlign: "center", marginBottom: 8 }}
           >
             <h1 style={{ fontSize: 28, fontWeight: 700, color: "#0f172a", letterSpacing: "-0.03em", margin: 0 }}>
-              Cool Spot
+              The BOBA Lounge
             </h1>
             <p style={{ fontSize: 14, color: "#64748b", margin: "4px 0 0 0", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Frozen Yogurt &amp; Coffee
+              Premium Boba &amp; Tea
             </p>
           </motion.div>
 
@@ -228,7 +228,7 @@ export default function InstallPrompt() {
                 padding: "16px",
                 borderRadius: 16,
                 border: "none",
-                background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
                 color: "white",
                 fontSize: 16,
                 fontWeight: 700,
@@ -258,7 +258,7 @@ export default function InstallPrompt() {
                 boxShadow: "0 12px 32px -12px rgba(0,0,0,0.05)",
               }}
             >
-              <p style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: "#38bdf8", marginBottom: 16, fontWeight: 700 }}>
+              <p style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: "#8b5cf6", marginBottom: 16, fontWeight: 700 }}>
                 {device === "ios" ? "Add to iPhone / iPad" : device === "android" ? "Add to Android" : "How to install"}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

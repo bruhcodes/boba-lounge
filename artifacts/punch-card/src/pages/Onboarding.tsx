@@ -52,7 +52,7 @@ export default function Onboarding() {
         onSuccess: (user) => {
           localStorage.setItem("punchCardUserId", user.id);
           toast({
-            title: "Welcome to Cool Spot!",
+            title: "Welcome to The BOBA Lounge!",
             description: "Your loyalty card is ready.",
           });
           setLocation("/card");
@@ -118,7 +118,7 @@ export default function Onboarding() {
       localStorage.setItem("punchCardUserId", match.id);
       toast({
         title: "Welcome back!",
-        description: "Here's your Cool Spot loyalty card.",
+        description: "Here's your The BOBA Lounge loyalty card.",
       });
       setLocation("/card");
     } catch (err) {
@@ -186,7 +186,7 @@ export default function Onboarding() {
               justifyContent: "center",
             }}
           >
-            <img src="/logo.png" alt="Cool Spot Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            <img src="/logo.png" alt="The BOBA Lounge Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </motion.div>
           <h1
             style={{
@@ -198,7 +198,7 @@ export default function Onboarding() {
               fontFamily: "var(--app-font-serif, serif)",
             }}
           >
-            Cool Spot
+            The BOBA Lounge
           </h1>
           <p
             style={{
@@ -209,7 +209,7 @@ export default function Onboarding() {
               textTransform: "uppercase",
             }}
           >
-            Frozen Yogurt &amp; Coffee
+            Premium Boba &amp; Tea
           </p>
           <p style={{ fontSize: 14, color: "#475569", margin: "12px 0 0", lineHeight: 1.6 }}>
             Your loyalty rewards, always in your pocket.
@@ -248,7 +248,7 @@ export default function Onboarding() {
                   transition: "all 0.2s",
                   background:
                     tab === t
-                      ? "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)"
+                      ? "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)"
                       : "transparent",
                   color: tab === t ? "#ffffff" : "#64748b",
                   boxShadow:
@@ -287,7 +287,7 @@ export default function Onboarding() {
                       }}
                       style={inputStyle}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "#38bdf8")
+                        (e.currentTarget.style.borderColor = "#8b5cf6")
                       }
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor = "#e2e8f0")
@@ -327,7 +327,7 @@ export default function Onboarding() {
                       background:
                         lookingUp || isCheckingServer
                           ? "#f1f5f9"
-                          : "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+                          : "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
                       color: lookingUp || isCheckingServer ? "#94a3b8" : "white",
                       fontSize: 16,
                       fontWeight: 700,
@@ -364,7 +364,7 @@ export default function Onboarding() {
                       onChange={(e) => { setName(e.target.value); clearError(); }}
                       style={inputStyle}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "#38bdf8")
+                        (e.currentTarget.style.borderColor = "#8b5cf6")
                       }
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor = "#e2e8f0")
@@ -380,7 +380,7 @@ export default function Onboarding() {
                       onChange={(e) => { setPhone(e.target.value); clearError(); }}
                       style={inputStyle}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "#38bdf8")
+                        (e.currentTarget.style.borderColor = "#8b5cf6")
                       }
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor = "#e2e8f0")
@@ -420,7 +420,7 @@ export default function Onboarding() {
                       background:
                         createUser.isPending || isCheckingServer
                           ? "#f1f5f9"
-                          : "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+                          : "linear-gradient(135deg, #8b5cf6 0%, #312e81 100%)",
                       color: createUser.isPending || isCheckingServer ? "#94a3b8" : "white",
                       fontSize: 16,
                       fontWeight: 700,
@@ -440,7 +440,7 @@ export default function Onboarding() {
                     <button
                       type="button"
                       onClick={() => { setTab("login"); setFormError(""); }}
-                      style={{ background: "none", border: "none", color: "#06b6d4", cursor: "pointer", fontWeight: 600, fontSize: 13 }}
+                      style={{ background: "none", border: "none", color: "#8b5cf6", cursor: "pointer", fontWeight: 600, fontSize: 13 }}
                     >
                       Sign in instead
                     </button>

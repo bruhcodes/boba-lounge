@@ -59,7 +59,7 @@ const emptyDraft: UserDraft = {
 export default function AdminUsers() {
   const queryClient = useQueryClient();
   const { data: settings } = useGetSettings();
-  const accentColor = settings?.accentColor || "#06b6d4";
+  const accentColor = settings?.accentColor || "#8b5cf6";
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);

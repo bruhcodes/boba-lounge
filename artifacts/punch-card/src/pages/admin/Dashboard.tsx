@@ -8,7 +8,7 @@ import { BellRing, Crown, Trophy, Users2, Zap } from "lucide-react";
 
 export default function AdminDashboard() {
   const { data: settings } = useGetSettings();
-  const accentColor = settings?.accentColor || "#06b6d4";
+  const accentColor = settings?.accentColor || "#8b5cf6";
   const { data: stats, isLoading } = useGetStats({
     query: { queryKey: getGetStatsQueryKey() },
   });

@@ -1,15 +1,21 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
-import { AdminLayout } from "@/components/layout/Layouts";
+import { AdminLayout, useGlobalAutoThank } from "@/components/layout/Layouts";
 import { Html5Qrcode } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Camera, ShieldAlert } from "lucide-react";
+import { useAddPunch, addPunch as addPunchApi } from "@workspace/api-client-react";
+import { toast } from "sonner";
 
 export default function ScanQRCode() {
   const [, setLocation] = useLocation();
   const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [sendThankYou, setSendThankYou] = useGlobalAutoThank();
   const scannerRef = useRef<Html5Qrcode | null>(null);
+
+  const { mutate: addPunch } = useAddPunch();
 
   useEffect(() => {
     const initScanner = async () => {
@@ -30,10 +36,22 @@ export default function ScanQRCode() {
               scannerRef.current.stop().catch(console.error);
             }
             setScanning(false);
+            setProcessing(true);
             
-            // Redirect to the user's detail page
-            // Assuming the QR code contains the user ID directly
-            setLocation(`/admin/users/${decodedText}`);
+            // Automatically add a punch
+            addPunchApi(decodedText, {
+              params: { thankYou: sendThankYou ? "true" : "false" }
+            } as any)
+            .then((updatedUser) => {
+              toast.success(`Punch added! ${updatedUser.name} now has ${updatedUser.punchCount} punches.`);
+              setLocation(`/admin/users/${decodedText}`);
+            })
+            .catch((err: any) => {
+              console.error("Failed to add punch:", err);
+              toast.error(err.data?.error || "Failed to add punch automatically.");
+              // Still redirect so admin can see what's wrong
+              setLocation(`/admin/users/${decodedText}`);
+            });
           },
           (errorMessage) => {
             // Parse errors (ignored usually as it scans continuously)
@@ -87,22 +105,42 @@ export default function ScanQRCode() {
                 </Button>
               </div>
             ) : (
-              <div className="relative mx-auto max-w-md overflow-hidden rounded-[1.5rem] bg-slate-100">
-                <div id="reader" className="w-full"></div>
-                {!scanning && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-                    <p className="text-lg font-medium text-slate-900">Redirecting...</p>
-                  </div>
-                )}
-                {scanning && (
-                  <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-slate-900/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
-                    <div className="flex items-center gap-1.5">
-                      <Camera className="h-3.5 w-3.5" />
-                      Scanning...
+              <>
+                <div className="relative mx-auto max-w-md overflow-hidden rounded-[1.5rem] bg-slate-100">
+                  <div id="reader" className="w-full"></div>
+                  {processing && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                      <p className="text-lg font-medium text-slate-900">Adding punch...</p>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                  {!scanning && !processing && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                      <p className="text-lg font-medium text-slate-900">Redirecting...</p>
+                    </div>
+                  )}
+                  {scanning && (
+                    <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-slate-900/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
+                      <div className="flex items-center gap-1.5">
+                        <Camera className="h-3.5 w-3.5" />
+                        Scanning...
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6 flex items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <input
+                    type="checkbox"
+                    id="thankYouScanner"
+                    checked={sendThankYou}
+                    onChange={(e) => setSendThankYou(e.target.checked)}
+                    className="h-5 w-5 rounded border-slate-300 text-cyan-600 focus:ring-cyan-600"
+                  />
+                  <label htmlFor="thankYouScanner" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
+                    Send automated "Thank You" message in 5 mins 💌
+                  </label>
+                </div>
+              </>
             )}
           </div>
         </div>

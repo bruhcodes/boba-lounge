@@ -66,7 +66,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  let data = { title: 'Punch Card', body: 'You have a new message!' };
+  let data = { title: 'The BOBA Lounge', body: 'You have a new message!' };
   try {
     if (event.data) data = event.data.json();
   } catch (e) {
@@ -75,8 +75,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || data.message || 'New notification',
-    icon: withBasePath('./app-icon.svg'),
-    badge: withBasePath('./app-icon.svg'),
+    icon: withBasePath('./logo.png'),
+    badge: withBasePath('./logo.png'),
     vibrate: [100, 50, 100],
     tag: data.tag || 'punch-card-alert',
     renotify: true,
@@ -85,7 +85,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Punch Card', options)
+    self.registration.showNotification(data.title || 'The BOBA Lounge', options)
   );
 });
 
