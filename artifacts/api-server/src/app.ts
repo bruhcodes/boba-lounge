@@ -29,24 +29,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Admin authentication middleware
-const adminAuthMiddleware = (req: any, res: any, next: any) => {
-  // Skip auth for health check and login verification
-  if (req.path === "/healthz" || req.path === "/auth/verify") {
-    return next();
-  }
-  
-  const providedPassword = req.headers["x-admin-password"];
-  const actualPassword = process.env.ADMIN_PASSWORD || "12345";
-  
-  if (providedPassword === actualPassword) {
-    next();
-  } else {
-    res.status(401).json({ error: "Unauthorized: Invalid admin password" });
-  }
-};
-
-app.use("/api", adminAuthMiddleware, router);
+app.use("/api", router);
 
 // Error handler
 app.use((err: any, req: any, res: any, next: any) => {

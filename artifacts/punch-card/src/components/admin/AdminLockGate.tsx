@@ -13,12 +13,8 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const isUnlocked = localStorage.getItem(ADMIN_SESSION_KEY) === "true";
-    const hasPassword = sessionStorage.getItem(ADMIN_PWD_KEY);
-    if (isUnlocked && hasPassword) {
+    if (isUnlocked) {
       setUnlocked(true);
-    } else {
-      localStorage.removeItem(ADMIN_SESSION_KEY);
-      setUnlocked(false);
     }
   }, []);
 
@@ -45,7 +41,6 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       if (data.success) {
         localStorage.setItem(ADMIN_SESSION_KEY, "true");
-        sessionStorage.setItem(ADMIN_PWD_KEY, password);
         setUnlocked(true);
       } else {
         setError("Incorrect password. Please try again.");

@@ -68,9 +68,9 @@ router.get("/users", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const { search } = parsed.data;
+  const { search, limit, offset } = parsed.data;
 
-  const users = await listUsers(search);
+  const users = await listUsers(search, limit || 50, offset || 0);
 
   res.json(ListUsersResponse.parse(users));
 });

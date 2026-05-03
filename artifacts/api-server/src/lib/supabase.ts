@@ -160,10 +160,12 @@ function mapPushSubscription(row: SupabasePushSubscriptionRow): PushSubscription
   };
 }
 
-export async function listUsers(search?: string) {
+export async function listUsers(search?: string, limit: number = 20, offset: number = 0) {
   const params = new URLSearchParams({
     select: "*",
     order: "created_at.desc",
+    limit: limit.toString(),
+    offset: offset.toString(),
   });
 
   if (search) {

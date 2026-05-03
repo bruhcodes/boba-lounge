@@ -66,11 +66,13 @@ export default function AdminUsers() {
   const [draft, setDraft] = useState<UserDraft>(emptyDraft);
   const debouncedSearch = useDebounceValue(search, 300);
 
-  const { data: users, isLoading } = useListUsers(
-    { search: debouncedSearch || undefined },
+  const [limit, setLimit] = useState(20);
+  const { data: users, isLoading, isPlaceholderData } = useListUsers(
+    { search: debouncedSearch || undefined, limit },
     {
       query: {
-        queryKey: getListUsersQueryKey({ search: debouncedSearch || undefined }),
+        queryKey: getListUsersQueryKey({ search: debouncedSearch || undefined, limit }),
+        placeholderData: (previousData) => previousData,
       },
     },
   );
@@ -210,55 +212,74 @@ export default function AdminUsers() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {isLoading && !users ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
-                      Loading users...
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-800" />
+                        Loading users...
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : users && users.length > 0 ? (
-                  users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-11 w-11 rounded-2xl">
-                            <AvatarImage src={user.avatarUrl || undefined} alt={user.name} />
-                            <AvatarFallback className="rounded-2xl bg-slate-950 text-white">
-                              {user.name.slice(0, 2).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-xs text-muted-foreground">{user.id.slice(0, 8)}</div>
+                  <>
+                    {users.map((user) => (
+                      <TableRow key={user.id} className={isPlaceholderData ? "opacity-50" : ""}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-11 w-11 rounded-2xl">
+                              <AvatarImage src={user.avatarUrl || undefined} alt={user.name} />
+                              <AvatarFallback className="rounded-2xl bg-slate-950 text-white">
+                                {user.name.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{user.name}</div>
+                              <div className="text-xs text-muted-foreground">{user.id.slice(0, 8)}</div>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell className="text-right">
-                        <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>
-                          {user.punchCount} / {user.totalPunches}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        {format(new Date(user.createdAt), "MMM d, yyyy")}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Link href={`/admin/users/${user.id}`}>
-                            <Button variant="outline" size="sm" className="rounded-xl">Open</Button>
-                          </Link>
-                          <Button variant="outline" size="sm" className="rounded-xl" onClick={() => openEdit(user)}>
-                            <Pencil className="mr-2 h-3.5 w-3.5" />
-                            Edit
+                        </TableCell>
+                        <TableCell>{user.phone}</TableCell>
+                        <TableCell className="text-right">
+                          <span className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: `${accentColor}18`, color: accentColor }}>
+                            {user.punchCount} / {user.totalPunches}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          {format(new Date(user.createdAt), "MMM d, yyyy")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Link href={`/admin/users/${user.id}`}>
+                              <Button variant="outline" size="sm" className="rounded-xl">Open</Button>
+                            </Link>
+                            <Button variant="outline" size="sm" className="rounded-xl" onClick={() => openEdit(user)}>
+                              <Pencil className="mr-2 h-3.5 w-3.5" />
+                              Edit
+                            </Button>
+                            <Button variant="outline" size="sm" className="rounded-xl text-destructive" onClick={() => handleDelete(user)}>
+                              <Trash2 className="mr-2 h-3.5 w-3.5" />
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {users.length >= limit && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="py-4 text-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setLimit(prev => prev + 20)}
+                            className="rounded-xl text-xs"
+                          >
+                            Show more customers
                           </Button>
-                          <Button variant="outline" size="sm" className="rounded-xl text-destructive" onClick={() => handleDelete(user)}>
-                            <Trash2 className="mr-2 h-3.5 w-3.5" />
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
