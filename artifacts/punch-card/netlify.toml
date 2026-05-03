@@ -1,0 +1,9 @@
+[build]
+  base = "artifacts/punch-card"
+  command = "pnpm build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
