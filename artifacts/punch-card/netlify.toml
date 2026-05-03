@@ -5,7 +5,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://boba-lounge-api.onrender.com/:splat"
+  to = "https://boba-lounge-api.onrender.com/api/:splat"
   status = 200
   force = true
 
