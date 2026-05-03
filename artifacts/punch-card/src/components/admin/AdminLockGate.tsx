@@ -3,6 +3,7 @@ import { LockKeyhole } from "lucide-react";
 
 
 const ADMIN_SESSION_KEY = "is-admin-unlocked";
+const ADMIN_PWD_KEY = "admin-password"; // Matches key in custom-fetch.ts
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export function AdminLockGate({ children }: { children: React.ReactNode }) {
@@ -11,12 +12,12 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
-    const isUnlocked = sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
-    const hasPassword = !!sessionStorage.getItem("admin-password");
+    const isUnlocked = localStorage.getItem(ADMIN_SESSION_KEY) === "true";
+    const hasPassword = sessionStorage.getItem(ADMIN_PWD_KEY);
     if (isUnlocked && hasPassword) {
       setUnlocked(true);
     } else {
-      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
       setUnlocked(false);
     }
   }, []);
@@ -43,8 +44,8 @@ export function AdminLockGate({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
       if (data.success) {
-        sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
-        sessionStorage.setItem("admin-password", password);
+        localStorage.setItem(ADMIN_SESSION_KEY, "true");
+        sessionStorage.setItem(ADMIN_PWD_KEY, password);
         setUnlocked(true);
       } else {
         setError("Incorrect password. Please try again.");
