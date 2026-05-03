@@ -340,14 +340,6 @@ export async function customFetch<T = unknown>(
 
   const headers = mergeHeaders(isRequest(input) ? input.headers : undefined, headersInit);
 
-  // Add admin password if available in session storage (Staff security)
-  if (typeof window !== "undefined" && window.sessionStorage) {
-    const adminPwd = window.sessionStorage.getItem("admin-password");
-    if (adminPwd) {
-      headers.set("x-admin-password", adminPwd);
-    }
-  }
-
   if (
     typeof init.body === "string" &&
     !headers.has("content-type") &&
