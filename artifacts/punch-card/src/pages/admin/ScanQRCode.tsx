@@ -39,9 +39,7 @@ export default function ScanQRCode() {
             setProcessing(true);
             
             // Automatically add a punch
-            addPunchApi(decodedText, {
-              params: { thankYou: sendThankYou ? "true" : "false" }
-            } as any)
+            addPunchApi(decodedText, { thankYou: sendThankYou ? "true" : "false" })
             .then((updatedUser) => {
               toast.success(`Punch added! ${updatedUser.name} now has ${updatedUser.punchCount} punches.`);
               setLocation(`/admin/users/${decodedText}`);

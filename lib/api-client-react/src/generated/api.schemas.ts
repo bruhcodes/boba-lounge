@@ -104,3 +104,10 @@ export type ListUsersParams = {
 export type ListNotificationsParams = {
   userId: string;
 };
+
+export type AddPunchParams = {
+  /**
+   * Whether to send an automated thank you notification after 5 minutes
+   */
+  thankYou?: string;
+};

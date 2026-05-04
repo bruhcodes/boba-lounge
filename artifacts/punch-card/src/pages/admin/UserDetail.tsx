@@ -52,9 +52,7 @@ export default function AdminUserDetail() {
 
   const handleAddPunch = async () => {
     try {
-      const data = await addPunchApi(userId, {
-        params: { thankYou: sendThankYou ? "true" : "false" }
-      } as any);
+      const data = await addPunchApi(userId, { thankYou: sendThankYou ? "true" : "false" });
       refreshUserData(data);
       toast.success(sendThankYou ? "Punch added! Thank you scheduled for 5 mins." : "Punch added successfully");
     } catch (err) {

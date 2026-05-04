@@ -102,6 +102,7 @@ export const DeleteUserParams = zod.object({
  */
 export const AddPunchParams = zod.object({
   id: zod.coerce.string(),
+  thankYou: zod.string().optional(),
 });
 
 export const AddPunchResponse = zod.object({

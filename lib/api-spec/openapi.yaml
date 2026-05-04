@@ -177,6 +177,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: thankYou
+          in: query
+          schema:
+            type: string
+          description: Whether to send an automated thank you notification after 5 minutes
       responses:
         "200":
           description: Updated user

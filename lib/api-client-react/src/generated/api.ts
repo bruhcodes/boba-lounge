@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AddPunchParams,
   CreateUserBody,
   ErrorResponse,
   HealthStatus,
@@ -547,15 +548,28 @@ export const useDeleteUser = <
 /**
  * @summary Add a punch to a user
  */
-export const getAddPunchUrl = (id: string) => {
-  return `/api/users/${id}/punch`;
+export const getAddPunchUrl = (id: string, params?: AddPunchParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/users/${id}/punch?${stringifiedParams}`
+    : `/api/users/${id}/punch`;
 };
 
 export const addPunch = async (
   id: string,
+  params?: AddPunchParams,
   options?: RequestInit,
 ): Promise<User> => {
-  return customFetch<User>(getAddPunchUrl(id), {
+  return customFetch<User>(getAddPunchUrl(id, params), {
     ...options,
     method: "POST",
   });
@@ -568,14 +582,14 @@ export const getAddPunchMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof addPunch>>,
     TError,
-    { id: string },
+    { id: string; params?: AddPunchParams },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof addPunch>>,
   TError,
-  { id: string },
+  { id: string; params?: AddPunchParams },
   TContext
 > => {
   const mutationKey = ["addPunch"];
@@ -589,11 +603,11 @@ export const getAddPunchMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof addPunch>>,
-    { id: string }
+    { id: string; params?: AddPunchParams }
   > = (props) => {
-    const { id } = props ?? {};
+    const { id, params } = props ?? {};
 
-    return addPunch(id, requestOptions);
+    return addPunch(id, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -615,14 +629,14 @@ export const useAddPunch = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof addPunch>>,
     TError,
-    { id: string },
+    { id: string; params?: AddPunchParams },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof addPunch>>,
   TError,
-  { id: string },
+  { id: string; params?: AddPunchParams },
   TContext
 > => {
   return useMutation(getAddPunchMutationOptions(options));
